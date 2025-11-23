@@ -1,6 +1,8 @@
 use aws_sdk_s3::Client;
 use aws_sdk_s3::config::{Credentials, Region};
 use aws_sdk_s3::error::ProvideErrorMetadata;
+use std::time::Duration;
+use aws_config::timeout::TimeoutConfig;
 
 pub async fn new_s3_client(url: String, access_key_id: impl Into<String>, secret_access_key: impl Into<String>,buckets: Vec<&str>) -> Client {
     let region = Region::new("us-east-1");
@@ -14,10 +16,16 @@ pub async fn new_s3_client(url: String, access_key_id: impl Into<String>, secret
     );
 
     // Build the AWS SDK config with all necessary settings for MinIO.
+    let timeout_config = TimeoutConfig::builder()
+        .connect_timeout(Duration::from_secs(10))
+        .read_timeout(Duration::from_secs(300)) // 5 minutes read timeout for large streams
+        .build();
+
     let config = aws_config::defaults(aws_config::BehaviorVersion::latest())
       .region(region)
       .credentials_provider(credentials)
       .endpoint_url(url)
+      .timeout_config(timeout_config)
       .load()
       .await;
 
@@ -48,6 +56,4 @@ pub async fn new_s3_client(url: String, access_key_id: impl Into<String>, secret
     }
 
     client
-
-
 }
