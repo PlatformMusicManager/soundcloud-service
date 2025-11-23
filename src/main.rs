@@ -31,7 +31,8 @@ where
 #[derive(Clone)]
 struct AppState {
     pub soundcloud: Arc<SoundCloudApi>,
-    pub s3_client: Client
+    pub s3_client: Client,
+    pub s3_bucket_name: String,
 }
 
 #[tokio::main]
@@ -52,9 +53,10 @@ async fn main() {
         soundcloud: Arc::new(SoundCloudApi::new(
             soundcloud_id,
             s3_client.clone(),
-            s3_bucket_name
+            s3_bucket_name.clone()
         ).await),
-        s3_client
+        s3_client,
+        s3_bucket_name
     };
 
 

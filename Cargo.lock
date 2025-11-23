@@ -2389,8 +2389,10 @@ dependencies = [
  "aws-sdk-s3",
  "axum",
  "dotenv",
+ "futures",
  "soundcloud",
  "tokio",
+ "tokio-util",
 ]
 
 [[package]]
