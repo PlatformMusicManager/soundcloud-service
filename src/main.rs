@@ -7,10 +7,12 @@ use std::str::FromStr;
 use std::sync::Arc;
 use aws_sdk_s3::Client;
 use axum::Router;
-use axum::routing::get;
+use axum::routing::{get, post};
 use dotenv::dotenv;
 use soundcloud::soundcloud_client::SoundCloudApi;
 use crate::routes::get_stream_by_id::get_stream_by_id;
+use crate::routes::get_stream_by_token::get_stream_by_token;
+use crate::routes::search::search;
 use crate::s3_client::new_s3_client;
 
 pub fn parse_env<T>(key: &str) -> T
@@ -63,7 +65,10 @@ async fn main() {
 
 
     let app = Router::new()
-        .route("/stream/{id}", get(get_stream_by_id))
+        .route("/search", get(search))
+        .route("/stream_by_id/{id}", get(get_stream_by_id))
+        .route("/stream_by_token/{id}", post(get_stream_by_token))
+
         .with_state(app_state);
 
     // run our app with hyper, listening globally on port 3000

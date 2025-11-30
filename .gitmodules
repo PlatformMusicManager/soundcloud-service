@@ -1,3 +1,6 @@
 [submodule "libs/soundcloud"]
 	path = libs/soundcloud
 	url = git@github.com:PlatformMusicManager/soundcloud-lib
+[submodule "libs/domain-lib"]
+	path = libs/domain-lib
+	url = git@github.com:PlatformMusicManager/domain-lib.git
