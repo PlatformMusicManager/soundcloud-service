@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 axum = { version = "0.8.7", features = ["macros"] }
 soundcloud = { path = "libs/soundcloud" }
+
 tokio = { version = "1", features = [] }
 dotenv = "0.15.0"
 aws-sdk-s3 = { version = "1.112.0" }

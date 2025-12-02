@@ -10,8 +10,7 @@ use axum::Router;
 use axum::routing::{get, post};
 use dotenv::dotenv;
 use soundcloud::soundcloud_client::SoundCloudApi;
-use crate::routes::get_stream_by_id::get_stream_by_id;
-use crate::routes::get_stream_by_token::get_stream_by_token;
+use crate::routes::get_stream::stream;
 use crate::routes::search::search;
 use crate::s3_client::new_s3_client;
 
@@ -66,8 +65,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/search", get(search))
-        .route("/stream_by_id/{id}", get(get_stream_by_id))
-        .route("/stream_by_token/{id}", post(get_stream_by_token))
+        .route("/stream/{id}", post(stream))
 
         .with_state(app_state);
 

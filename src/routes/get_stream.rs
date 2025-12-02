@@ -1,16 +1,28 @@
 use axum::body::Body;
 use axum::extract::{Path, Query, State};
 use axum::http::Response;
+use axum::Json;
+use serde::Deserialize;
 use soundcloud::soundcloud_client::SoundcloudError;
-use crate::AppState;
 use tokio_util::io::ReaderStream;
-use crate::routes::StreamParams;
+use crate::AppState;
 
-#[axum::debug_handler]
-pub async fn get_stream_by_id(
+#[derive(Deserialize)]
+pub struct StreamParams {
+    save: bool,
+}
+
+#[derive(Deserialize)]
+pub struct TrackData {
+    media_url: Option<String>,
+    track_token: Option<String>,
+}
+
+pub async fn stream(
     State(state): State<AppState>,
     Path(id): Path<String>,
-    Query(params): Query<StreamParams>
+    Query(params): Query<StreamParams>,
+    Json(payload): Json<TrackData>
 ) -> Result<Response<Body>, SoundcloudError> {
     let s3_res = state.s3_client
         .get_object()
@@ -25,11 +37,7 @@ pub async fn get_stream_by_id(
         return Ok(Response::new(Body::from_stream(stream)));
     }
 
-    if params.save {
-        let res = state.soundcloud.stream_and_save_by_id(id).await?;
-        Ok(Response::new(Body::new(res)))
-    } else {
-        let res = state.soundcloud.stream_by_id(id).await?;
-        Ok(Response::new(Body::from_stream(res)))
-    }
+    let res = state.soundcloud.stream(id, params.save, payload.media_url, payload.track_token).await?;
+
+    Ok(Response::new(res))
 }
