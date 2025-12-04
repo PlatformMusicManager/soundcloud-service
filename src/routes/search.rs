@@ -1,8 +1,8 @@
 use axum::extract::{Query, State};
 use axum::Json;
+use domain::errors::music_services::soundcloud_api_error::SoundcloudApiError;
 use serde::Deserialize;
 use soundcloud::models::search::SearchResponse;
-use soundcloud::soundcloud_client::SoundcloudError;
 
 use crate::AppState;
 
@@ -14,7 +14,7 @@ pub struct SearchParams {
 }
 
 pub async fn search(State(state): State<AppState>, Query(params): Query<SearchParams>)
--> Result<Json<SearchResponse>, SoundcloudError>
+-> Result<Json<SearchResponse>, SoundcloudApiError>
 {
     let res = state.soundcloud.search(&params.query, &params.offset, &params.limit).await?;
 

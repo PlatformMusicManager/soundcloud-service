@@ -8,9 +8,12 @@ use std::sync::Arc;
 use aws_sdk_s3::Client;
 use axum::Router;
 use axum::routing::{get, post};
+use chrono::Duration;
+use database_lib::client::PostgresDb;
 use dotenv::dotenv;
 use soundcloud::soundcloud_client::SoundCloudApi;
 use crate::routes::get_stream::stream;
+use crate::routes::playlist::playlist;
 use crate::routes::search::search;
 use crate::s3_client::new_s3_client;
 
@@ -33,6 +36,7 @@ where
 #[derive(Clone)]
 struct AppState {
     pub soundcloud: Arc<SoundCloudApi>,
+    pub database: PostgresDb,
     pub s3_client: Client,
     pub s3_bucket_name: String,
 }
@@ -49,6 +53,9 @@ async fn main() {
     let s3_pass: String = env::var("S3_PASS").unwrap();
     let s3_bucket_name: String = env::var("S3_BUCKET_NAME").unwrap();
 
+    let database_url: String = env::var("DATABASE_URL").unwrap();
+
+
     let s3_client = new_s3_client(s3_url, s3_login, s3_pass, vec![&s3_bucket_name]).await;
 
     let app_state = AppState {
@@ -58,6 +65,7 @@ async fn main() {
             s3_bucket_name.clone(),
             6 * 1024 * 1024 // Default part size: 6MB
         ).await),
+        database: PostgresDb::new(database_url, Duration::new(0, 0).unwrap()).await,
         s3_client,
         s3_bucket_name
     };
@@ -66,6 +74,7 @@ async fn main() {
     let app = Router::new()
         .route("/search", get(search))
         .route("/stream/{id}", post(stream))
+        .route("/playlist/{id}", get(playlist))
 
         .with_state(app_state);
 

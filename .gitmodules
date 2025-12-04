@@ -4,3 +4,6 @@
 [submodule "libs/domain-lib"]
 	path = libs/domain-lib
 	url = git@github.com:PlatformMusicManager/domain-lib.git
+[submodule "libs/database-lib"]
+	path = libs/database-lib
+	url = git@github.com:PlatformMusicManager/database-lib.git

@@ -6,6 +6,8 @@ edition = "2024"
 [dependencies]
 axum = { version = "0.8.7", features = ["macros"] }
 soundcloud = { path = "libs/soundcloud" }
+database-lib = { path = "libs/database-lib" }
+domain = { path = "libs/domain-lib" }
 
 tokio = { version = "1", features = [] }
 dotenv = "0.15.0"
@@ -15,3 +17,4 @@ futures = "0.3"
 tokio-util = { version = "0.7", features = ["io"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
+chrono = "0.4.42"

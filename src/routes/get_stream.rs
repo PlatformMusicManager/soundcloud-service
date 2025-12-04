@@ -2,8 +2,8 @@ use axum::body::Body;
 use axum::extract::{Path, Query, State};
 use axum::http::Response;
 use axum::Json;
+use domain::errors::music_services::soundcloud_api_error::SoundcloudApiError;
 use serde::Deserialize;
-use soundcloud::soundcloud_client::SoundcloudError;
 use tokio_util::io::ReaderStream;
 use crate::AppState;
 
@@ -23,7 +23,7 @@ pub async fn stream(
     Path(id): Path<String>,
     Query(params): Query<StreamParams>,
     Json(payload): Json<TrackData>
-) -> Result<Response<Body>, SoundcloudError> {
+) -> Result<Response<Body>, SoundcloudApiError> {
     let s3_res = state.s3_client
         .get_object()
         .bucket(&state.s3_bucket_name)
