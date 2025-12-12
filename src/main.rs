@@ -15,6 +15,7 @@ use soundcloud::soundcloud_client::SoundCloudApi;
 use crate::routes::get_stream::stream;
 use crate::routes::playlist::playlist;
 use crate::routes::search::search;
+use crate::routes::track::track;
 use crate::s3_client::new_s3_client;
 
 pub fn parse_env<T>(key: &str) -> T
@@ -73,6 +74,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/search", get(search))
+        .route("/track/{id}", get(track))
         .route("/stream/{id}", post(stream))
         .route("/playlist/{id}", get(playlist))
 
