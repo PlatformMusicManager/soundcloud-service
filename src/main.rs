@@ -1,5 +1,4 @@
 mod routes;
-pub mod s3_client;
 
 use std::env;
 use std::fmt::Debug;
@@ -12,11 +11,11 @@ use chrono::Duration;
 use database_lib::client::PostgresDb;
 use dotenv::dotenv;
 use soundcloud::soundcloud_client::SoundCloudApi;
+use utils_lib::create_s3_client::new_s3_client;
 use crate::routes::get_stream::stream;
 use crate::routes::playlist::playlist;
 use crate::routes::search::search;
 use crate::routes::track::track;
-use crate::s3_client::new_s3_client;
 
 pub fn parse_env<T>(key: &str) -> T
 where
