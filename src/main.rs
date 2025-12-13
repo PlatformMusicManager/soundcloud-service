@@ -1,37 +1,23 @@
 mod routes;
 
 use std::env;
-use std::fmt::Debug;
-use std::str::FromStr;
 use std::sync::Arc;
 use aws_sdk_s3::Client;
 use axum::Router;
 use axum::routing::{get, post};
+use cache_lib::RedisClient;
 use chrono::Duration;
 use database_lib::client::PostgresDb;
 use dotenv::dotenv;
 use soundcloud::soundcloud_client::SoundCloudApi;
+use utils_lib::auth_layer::{AuthLayer, AuthState};
 use utils_lib::create_s3_client::new_s3_client;
+use utils_lib::jwt::JwtClient;
+use utils_lib::parse_env::parse_env;
 use crate::routes::get_stream::stream;
 use crate::routes::playlist::playlist;
 use crate::routes::search::search;
 use crate::routes::track::track;
-
-pub fn parse_env<T>(key: &str) -> T
-where
-    T: FromStr,
-    <T as FromStr>::Err: Debug,
-{
-    match env::var(key) {
-        Ok(value) => {
-            match value.parse::<T>() {
-                Ok(parsed_value) => parsed_value,
-                Err(e) => panic!("Failed to parse environment variable '{}': {:?}", key, e),
-            }
-        }
-        Err(e) => panic!("Environment variable '{}' not set: {}", key, e),
-    }
-}
 
 #[derive(Clone)]
 struct AppState {
@@ -44,6 +30,36 @@ struct AppState {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
+
+    let redis_url = parse_env("REDIS_URL");
+    let user_cache_ttl: i64 = parse_env("USER_CACHE_TTL");
+    let session_cache_ttl: u64 = parse_env("SESSION_CACHE_TTL");
+    let verify_ttl_s: u64 = parse_env("VERIFY_TTL");
+    let verify_ttl = Duration::seconds(verify_ttl_s as i64);
+    let verify_attempts: u8 = parse_env("VERIFY_ATTEMPTS");
+
+    let jwt_secret = parse_env("JWT_SECRET");
+
+    let access_token_ttl_s: i64 = parse_env("ACCESS_TOKEN_TTL");
+    let refresh_token_ttl_s: i64 = parse_env("REFRESH_TOKEN_TTL");
+
+    let auth_state = AuthState {
+        redis: RedisClient::new(
+            redis_url,
+            session_cache_ttl,
+            user_cache_ttl,
+            verify_ttl_s,
+            verify_attempts,
+        ),
+        jwt: Arc::new(
+            JwtClient::new(
+                jwt_secret,
+                verify_ttl,
+                Duration::seconds(access_token_ttl_s),
+                Duration::seconds(refresh_token_ttl_s)
+            )
+        ),
+    };
 
     let soundcloud_id: String = env::var("SOUNDCLOUD_ID").unwrap();
 
@@ -76,7 +92,7 @@ async fn main() {
         .route("/track/{id}", get(track))
         .route("/stream/{id}", post(stream))
         .route("/playlist/{id}", get(playlist))
-
+        .layer(AuthLayer { state: auth_state.clone() })
         .with_state(app_state);
 
     // run our app with hyper, listening globally on port 3000

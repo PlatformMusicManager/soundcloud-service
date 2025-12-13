@@ -10,3 +10,6 @@
 [submodule "libs/utils-lib"]
 	path = libs/utils-lib
 	url = git@github.com:PlatformMusicManager/utils-lib.git
+[submodule "libs/cache-lib"]
+	path = libs/cache-lib
+	url = git@github.com:PlatformMusicManager/cache-lib.git

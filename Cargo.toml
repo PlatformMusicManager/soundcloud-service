@@ -9,6 +9,7 @@ soundcloud = { path = "libs/soundcloud" }
 database-lib = { path = "libs/database-lib" }
 domain = { path = "libs/domain-lib" }
 utils-lib = { path = "./libs/utils-lib" }
+cache-lib = { path = "./libs/cache-lib" }
 
 tokio = { version = "1", features = [] }
 dotenv = "0.15.0"
