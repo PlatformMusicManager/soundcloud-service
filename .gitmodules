@@ -7,3 +7,6 @@
 [submodule "libs/database-lib"]
 	path = libs/database-lib
 	url = git@github.com:PlatformMusicManager/database-lib.git
+[submodule "libs/utils-lib"]
+	path = libs/utils-lib
+	url = git@github.com:PlatformMusicManager/utils-lib.git
