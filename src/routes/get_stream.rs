@@ -6,11 +6,7 @@ use domain::errors::music_services::soundcloud_api_error::SoundcloudApiError;
 use serde::Deserialize;
 use tokio_util::io::ReaderStream;
 use crate::AppState;
-
-#[derive(Deserialize)]
-pub struct StreamParams {
-    save: bool,
-}
+use crate::routes::SaveParams;
 
 #[derive(Deserialize)]
 pub struct TrackData {
@@ -21,7 +17,7 @@ pub struct TrackData {
 pub async fn stream(
     State(state): State<AppState>,
     Path(id): Path<String>,
-    Query(params): Query<StreamParams>,
+    Query(params): Query<SaveParams>,
     Json(payload): Json<TrackData>
 ) -> Result<Response<Body>, SoundcloudApiError> {
     let s3_res = state.s3_client

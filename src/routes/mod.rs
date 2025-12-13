@@ -4,4 +4,9 @@ pub mod get_stream;
 pub mod search;
 pub mod playlist;
 pub mod track;
-mod tracks;
+pub mod tracks;
+
+#[derive(Deserialize)]
+pub struct SaveParams {
+    save: bool,
+}
