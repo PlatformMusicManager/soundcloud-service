@@ -89,15 +89,16 @@ async fn main() {
         s3_bucket_name,
     };
 
-    let app = Router::new()
+    let routes = Router::new()
         .route("/search", get(search))
         .route("/track/{id}", get(track))
         .route("/stream/{id}", post(stream))
         .route("/playlist/{id}", get(playlist))
-        .layer(AuthLayer {
-            state: auth_state.clone(),
-        })
         .with_state(app_state);
+
+    let app = Router::new()
+        .nest("/api/soundcloud", routes)
+        .layer(AuthLayer { state: auth_state });
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
