@@ -4,6 +4,7 @@ use crate::routes::get_stream::stream;
 use crate::routes::playlist::playlist;
 use crate::routes::search::search;
 use crate::routes::track::track;
+use crate::routes::user::{get_artist_details_handler, get_user_handler, get_user_tracks_handler};
 use aws_sdk_s3::Client;
 use axum::Router;
 use axum::routing::{get, post};
@@ -94,6 +95,9 @@ async fn main() {
         .route("/track/{id}", get(track))
         .route("/stream/{id}", post(stream))
         .route("/playlist/{id}", get(playlist))
+        .route("/user/{id}", get(get_user_handler))
+        .route("/user/{id}/tracks", get(get_user_tracks_handler))
+        .route("/user/{id}/details", get(get_artist_details_handler))
         .with_state(app_state);
 
     let app = Router::new()

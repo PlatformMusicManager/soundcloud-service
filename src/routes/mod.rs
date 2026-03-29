@@ -1,12 +1,13 @@
 use serde::Deserialize;
 
 pub mod get_stream;
-pub mod search;
 pub mod playlist;
+pub mod search;
 pub mod track;
 pub mod tracks;
+pub mod user;
 
 #[derive(Deserialize)]
 pub struct SaveParams {
-    save: bool,
+    pub save: bool,
 }
