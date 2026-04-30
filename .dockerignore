@@ -1,6 +1,5 @@
-/target
-
-/.idea
-
-.git
-.gitignore
+**/target
+**/.vscode
+**/.idea
+**/.git
+**/.gitignore
