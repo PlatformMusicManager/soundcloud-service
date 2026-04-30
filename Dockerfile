@@ -27,6 +27,7 @@ COPY libs libs
 # RUN cargo chef cook --release --recipe-path recipe.json
 RUN cargo chef cook --recipe-path recipe.json
 
+
 # Stage 3: Build the application
 FROM rust:alpine AS builder
 WORKDIR /app
@@ -48,6 +49,7 @@ RUN cargo build
 FROM alpine:latest
 RUN apk add --no-cache openssl ca-certificates
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# COPY --from=builder /app/target/release/soundcloud-service /usr/local/bin/soundcloud-service
 COPY --from=builder /app/target/debug/soundcloud-service /usr/local/bin/soundcloud-service
 USER appuser
 CMD ["soundcloud-service"]
